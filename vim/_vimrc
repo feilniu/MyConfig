@@ -1,0 +1,316 @@
+" Description: MY vimrc for Linux/Windows, GUI/Console
+" Author: Feil <feilniu AT gmail DOT com>
+" Last Change: 2014-07-23 22:16:26
+
+" Global Variables {{{
+let g:my_deffontsize = 10
+if has('win32')
+  let g:my_os = 'Windows'
+  let g:my_vimrc = $VIM . '\_vimrc'
+  let g:my_vimfiles = $VIM . '\vimfiles'
+  let g:my_template = $VIM . '\template'
+else
+  let g:my_os = 'Linux'
+  let g:my_vimrc = $HOME . '/.vimrc'
+  let g:my_vimfiles = $HOME . '/.vim'
+  let g:my_template = $HOME . '/.template'
+endif
+let $VIMRC = g:my_vimrc
+let $VIMFILES = g:my_vimfiles
+let $TEMPLATE = g:my_template
+" }}}
+
+" Global Functions {{{
+function! GetFileEditSetting() "{{{
+  let misc = (&ar ? 'ar' : '')
+  let fencstr = (&fenc == '' ? &enc : &fenc) . (&bomb ? '.BOM' : '')
+  let ftstr = (&ft == '' ? '-' : &ft)
+  let textmode = (&et ? '-' : '|') . &ts .
+        \ (&cin ? 'c' : (&si ? 's' : (&ai ? 'a' : 'n'))) . &sw .
+        \ (&wrap ? 'z' : '-') . &tw .
+        \ (&ic ? (&scs ? 'S' : 'I') : 'C')
+  return misc . '[' . fencstr . ',' . strpart(&ff,0,1) . '][' . ftstr . ',' . textmode . ']'
+endfunction "}}}
+function! GetFileSetting() "{{{
+  let fencstr = (&fenc == '' ? &enc : &fenc) . (&bomb ? '.BOM' : '')
+  return '[' . fencstr . ',' . strpart(&ff,0,1) . ']'
+endfunction "}}}
+function! XxdToggle() "{{{
+  let mod = &mod
+  if getline(1) =~ "^0000000:"
+    exe '%!xxd -r'
+    set ft=
+    doautocmd filetypedetect BufReadPost
+  else
+    exe '%!xxd'
+    set ft=xxd
+  endif
+  let &mod = mod
+endfunction "}}}
+function! BeginTranslate() "{{{
+  if g:my_os == 'Windows'
+    simalt ~x
+    sleep
+  endif
+  set scrollbind
+  vsplit
+endfunction "}}}
+function! SetTimeStamp() "{{{
+  if line('$') > 10
+    1,10s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
+  else
+    %s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
+  endif
+endfunction "}}}
+function! SetFontSize(action) "{{{
+  if a:action == 's' " fullscreen show
+    let w:my_fontsize = 18
+    if g:my_os == 'Windows'
+      simalt ~x
+      sleep
+    endif
+  elseif a:action == '+'
+    let w:my_fontsize += 1
+  elseif a:action == '-'
+    let w:my_fontsize -= 1
+  else
+    let w:my_fontsize = g:my_deffontsize
+  endif
+  if g:my_os == 'Windows'
+    let fontstr = 'Courier_New:h' . w:my_fontsize
+    exec 'set gfn=' . fontstr
+  endif
+endfunction "}}}
+" }}}
+
+" General {{{
+set nocompatible
+map Q :q<CR>
+filetype plugin indent on
+syntax on
+if has('mouse') && &term != 'linux'
+  set mouse=a
+endif
+cd $HOME
+set autochdir
+" }}}
+
+" Language & Encoding {{{
+if g:my_os == 'Windows'
+  language C
+else
+  language en_US.UTF-8
+endif
+set encoding=utf-8
+if &term == 'win32' || &term == 'linux'
+  set termencoding=cp936
+endif
+set fileencodings=ucs-bom,utf-8,chinese,latin1
+set ambiwidth=double
+set formatoptions+=mM
+" }}}
+
+" Basic Editing {{{
+set history=100
+set backspace=indent,eol,start
+set whichwrap+=<,>,[,]
+set magic
+set incsearch
+set hlsearch
+set ignorecase
+set virtualedit=block
+set showcmd
+set showmatch
+set wildmenu
+" }}}
+
+" Layout & Formatting {{{
+set nowrap
+set textwidth=0
+set autoindent
+set smartindent
+set shiftround
+set shiftwidth=4
+set tabstop=4
+set expandtab
+set smarttab
+" }}}
+
+" Display {{{
+set shortmess=atI
+set number
+if &diff == 0
+  set statusline=%f\ %m%r[%{strftime('%Y%m%d',getftime(expand('%')))}]\|%-.50{getcwd()}%=%{GetFileEditSetting()}\ %-21(%11(%l/%L%),%-3v\ %P%)
+else
+  set statusline=%f\ %m%r[%{strftime('%Y%m%d',getftime(expand('%')))}]%{GetFileSetting()}
+endif
+set laststatus=2
+set lazyredraw
+set list
+set listchars=tab:\|\ ,trail:-,nbsp:_
+set scrolloff=5
+set foldcolumn=2
+" }}}
+
+" File {{{
+set noswapfile
+set nobackup
+set nowritebackup
+"set autoread
+set autowrite
+" }}}
+
+" GUI {{{
+if has('gui_running')
+  colorscheme desert
+  set guioptions=cg
+  nmap <silent> <F1> :if &go =~# 'm' <Bar> set go-=m <Bar> else <Bar> set go+=m <Bar> endif<CR>
+  source $VIMRUNTIME\delmenu.vim
+  source $VIMRUNTIME\menu.vim
+  set lines=40 columns=120
+  call SetFontSize('0')
+  nmap <C-Up> :call SetFontSize('+')<CR>
+  nmap <C-Down> :call SetFontSize('-')<CR>
+  nmap <C-k0> :call SetFontSize('0')<CR>
+  nmap <C-kPlus> :call SetFontSize('s')<CR>
+elseif &term == 'xterm'
+  set t_Co=256
+  if filereadable(g:my_vimfiles . '/colors/desert256.vim')
+    colorscheme desert256
+  endif
+endif
+" }}}
+
+" Windows {{{
+if g:my_os == 'Windows'
+  " Use <C-X><C-C><C-V> {{{
+  vnoremap <C-X> "+x
+  vnoremap <C-C> "+y
+  map <C-V> "+gP
+  cmap <C-V> <C-R>+
+  exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
+  exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
+  noremap <C-Q> <C-V>
+  " }}}
+  behave mswin
+  " Solution for diff {{{
+  set diffexpr=MyDiff()
+  function! MyDiff()
+    let opt = '-a --binary '
+    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+    let arg1 = v:fname_in
+    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+    let arg2 = v:fname_new
+    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+    let arg3 = v:fname_out
+    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+    let eq = ''
+    if $VIMRUNTIME =~ ' '
+      if &sh =~ '\<cmd'
+        let cmd = '""' . $VIMRUNTIME . '\diff"'
+        let eq = '"'
+      else
+        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+      endif
+    else
+      let cmd = $VIMRUNTIME . '\diff'
+    endif
+    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+  endfunction
+  " }}}
+endif
+" }}}
+
+" Key-mappings {{{
+nmap <ESC><ESC> :noh<CR>
+nmap <C-S> :update<CR>
+imap <C-S> <C-O>:update<CR>
+nmap <C-Tab> :bn<CR>
+nmap <C-S-Tab> :bN<CR>
+" <C-Tab><C-S-Tab> cannot be used in Putty, so also map <F2><F3>
+nmap <F2> :bp<CR>
+nmap <F3> :bn<CR>
+nmap <F4> :ls<CR>
+nmap <F5> :e $VIMRC<CR>
+nmap <F7> :Calendar<CR>
+nmap <F8> :NERDTreeToggle<CR>
+nmap <F9> :setl filetype=sql<CR>
+nmap <F10> :setl filetype=confluencewiki<CR>
+nmap <F11> :setl filetype=html<CR>
+nmap <F12> :setl wrap!<CR>
+nmap <Leader>ar :set autoread!<CR>
+nmap <Leader>bt :call BeginTranslate()<CR>
+nmap <Leader>et :setl et!<CR>
+nmap <Leader>li :setl list!<CR>
+nmap <Leader>sp :setl spell!<CR>
+nmap <Leader>tw :let &tw = (&tw > 0 ? 0 : 78)<CR>
+nmap <Leader>xxd :call XxdToggle()<CR>
+nmap <Leader>tt :%s/\%u3000/ /ge <Bar> %s/\s\+$//e <Bar> g/^$/d<CR>
+nmap <Leader>ac :%s/^.\+$/\0,/e<CR>
+nmap <Leader>qc :%s/^.\+$/'\0',/e<CR>
+nmap <Leader>eg :setl fenc=cp936<CR>
+nmap <Leader>eu :setl fenc=utf-8<CR>
+nmap <Leader>el :setl fenc=latin1<CR>
+nmap <Leader>bm :setl bomb!<CR>
+nmap <Leader>fd :setl ff=dos<CR>
+nmap <Leader>fu :setl ff=unix<CR>
+vmap <silent> // y/<C-R>=escape(@",'\\/.*^$~[]')<CR><CR>
+" }}}
+
+" Commands {{{
+command! -nargs=? FT setl ft=<args>
+command! -nargs=1 TS setl ts=<args> sw=<args>
+command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
+command! -range=% Count <line1>,<line2>sort | <line1>,<line2>s#\(^.\+$\)\(\n^\1$\)*#\=submatch(1)."\t".((len(submatch(0))+1)/(len(submatch(1))+1))#
+" }}}
+
+" Autocmds {{{
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+" filetype detection
+au BufNewFile,BufRead *.txt if &ft == '' | setl filetype=txt wrap | endif
+au BufNewFile,BufRead *.vxt setl filetype=txt
+au BufNewFile,BufRead *.t2t setl filetype=txt2tags
+au BufNewFile,BufRead *.hta setl filetype=html
+au BufNewFile,BufRead *.vb setl filetype=vb
+au BufNewFile,BufRead *.arff setl filetype=arff
+au BufNewFile,BufRead *.pig setl filetype=pig
+au BufNewFile,BufRead *.zsc setl filetype=zsc
+au BufNewFile,BufRead *.cwiki setl filetype=confluencewiki
+au BufNewFile,BufRead *.aspx,*.ascx setl filetype=html
+au BufNewFile,BufRead *.py2,*.pyw2 setl filetype=python
+au BufNewFile,BufRead *.cue setl filetype=cue et ts=2 sw=2
+" filetype settings
+au BufNewFile,BufRead *.cmd,*.sh,*.vim setl et ts=2 sw=2
+au BufNewFile,BufRead *.dtsConfig,*.rdl setl et ts=2 sw=2
+au BufNewFile,BufRead *.xml,*web.config setl noet
+au FileType vim,python,perl,sh,cs setl noic
+au FileType javascript setl noet
+au FileType sql setl noet nosi
+au FileType html,xhtml setl noet
+au FileType vimwiki,txt2tags setl noet
+au BufWritePre,FileWritePre *.sql,*.cmd if &bomb == 0 | setl fenc=cp936 ff=dos | endif
+au BufWritePre,FileWritePre *.tab setl fenc=cp936 ff=dos
+" timestamp
+au BufWritePre,FileWritePre *vimrc,*.vim,*.ahk call SetTimeStamp()
+" }}}
+
+" Plugins {{{
+" TOhtml
+let g:html_ignore_folding = 1
+let g:html_use_css = 1
+let g:use_xhtml = 1
+" snipMate
+let g:snips_author = 'Feil <feilniu AT gmail DOT com>'
+" syntax sqlserver
+let g:sql_type_default = 'sqlserver'
+" }}}
+
+" Compatibility {{{
+if v:version >= 703
+  set cryptmethod=blowfish
+  nmap <silent> <Leader>rn :if &rnu == 0 <Bar> setl rnu <Bar> else <Bar> setl nu <Bar> endif<CR>
+endif
+" }}}
+
+" vim:et:ts=2:sw=2:fdm=marker:
