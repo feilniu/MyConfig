@@ -1,6 +1,6 @@
 " Description: MY vimrc for Linux/Windows, GUI/Console
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2014-07-23 22:16:26
+" Last Change: 2014-07-23 23:37:00
 
 " Global Variables {{{
 let g:my_deffontsize = 10
@@ -266,31 +266,19 @@ command! -range=% Count <line1>,<line2>sort | <line1>,<line2>s#\(^.\+$\)\(\n^\1$
 " }}}
 
 " Autocmds {{{
+" last-position-jump
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-" filetype detection
-au BufNewFile,BufRead *.txt if &ft == '' | setl filetype=txt wrap | endif
-au BufNewFile,BufRead *.vxt setl filetype=txt
-au BufNewFile,BufRead *.t2t setl filetype=txt2tags
-au BufNewFile,BufRead *.hta setl filetype=html
-au BufNewFile,BufRead *.vb setl filetype=vb
-au BufNewFile,BufRead *.arff setl filetype=arff
-au BufNewFile,BufRead *.pig setl filetype=pig
-au BufNewFile,BufRead *.zsc setl filetype=zsc
-au BufNewFile,BufRead *.cwiki setl filetype=confluencewiki
-au BufNewFile,BufRead *.aspx,*.ascx setl filetype=html
+" filetype settings
+au BufNewFile,BufRead *.txt setl filetype=txt wrap
 au BufNewFile,BufRead *.py2,*.pyw2 setl filetype=python
 au BufNewFile,BufRead *.cue setl filetype=cue et ts=2 sw=2
-" filetype settings
 au BufNewFile,BufRead *.cmd,*.sh,*.vim setl et ts=2 sw=2
 au BufNewFile,BufRead *.dtsConfig,*.rdl setl et ts=2 sw=2
 au BufNewFile,BufRead *.xml,*web.config setl noet
 au FileType vim,python,perl,sh,cs setl noic
-au FileType javascript setl noet
 au FileType sql setl noet nosi
-au FileType html,xhtml setl noet
-au FileType vimwiki,txt2tags setl noet
-au BufWritePre,FileWritePre *.sql,*.cmd if &bomb == 0 | setl fenc=cp936 ff=dos | endif
-au BufWritePre,FileWritePre *.tab setl fenc=cp936 ff=dos
+au FileType html,xhtml,javascript setl noet nosi
+au BufWritePre,FileWritePre *.sql,*.cmd,*.tab if &bomb == 0 | setl fenc=cp936 ff=dos | endif
 " timestamp
 au BufWritePre,FileWritePre *vimrc,*.vim,*.ahk call SetTimeStamp()
 " }}}
