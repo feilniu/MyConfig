@@ -1,9 +1,8 @@
 " Description: MY vimrc for Linux/Windows, GUI/Console
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2014-07-23 23:37:00
+" Last Change: 2014-10-19 21:24:40
 
-" Global Variables {{{
-let g:my_deffontsize = 10
+" Global variables {{{
 if has('win32')
   let g:my_os = 'Windows'
   let g:my_vimrc = $VIM . '\_vimrc'
@@ -20,7 +19,55 @@ let $VIMFILES = g:my_vimfiles
 let $TEMPLATE = g:my_template
 " }}}
 
-" Global Functions {{{
+" General settings {{{
+set nocompatible
+map Q :q<CR>
+filetype plugin indent on
+syntax on
+if has('mouse')
+  set mouse=a
+endif
+
+" Language
+if g:my_os == 'Windows'
+  language C
+else
+  language en_US.UTF-8
+endif
+
+" Basic editing
+set history=100
+set backspace=indent,eol,start
+set whichwrap+=<,>,[,]
+set magic
+set incsearch
+set hlsearch
+set ignorecase
+set virtualedit=block
+set showcmd
+set showmatch
+set wildmenu
+set autochdir
+
+" Layout & indent
+set nowrap
+set textwidth=0
+set autoindent
+set smartindent
+set shiftround
+set shiftwidth=4
+set tabstop=4
+set expandtab
+set smarttab
+
+" Display
+set shortmess=atI
+set number
+if &diff == 0
+  set statusline=%f\ %m%r[%{strftime('%Y%m%d',getftime(expand('%')))}]\|%-.50{getcwd()}%=%{GetFileEditSetting()}\ %-21(%11(%l/%L%),%-3v\ %P%)
+else
+  set statusline=%f\ %m%r[%{strftime('%Y%m%d',getftime(expand('%')))}]%{GetFileSetting()}
+endif
 function! GetFileEditSetting() "{{{
   let misc = (&ar ? 'ar' : '')
   let fencstr = (&fenc == '' ? &enc : &fenc) . (&bomb ? '.BOM' : '')
@@ -35,72 +82,21 @@ function! GetFileSetting() "{{{
   let fencstr = (&fenc == '' ? &enc : &fenc) . (&bomb ? '.BOM' : '')
   return '[' . fencstr . ',' . strpart(&ff,0,1) . ']'
 endfunction "}}}
-function! XxdToggle() "{{{
-  let mod = &mod
-  if getline(1) =~ "^0000000:"
-    exe '%!xxd -r'
-    set ft=
-    doautocmd filetypedetect BufReadPost
-  else
-    exe '%!xxd'
-    set ft=xxd
-  endif
-  let &mod = mod
-endfunction "}}}
-function! BeginTranslate() "{{{
-  if g:my_os == 'Windows'
-    simalt ~x
-    sleep
-  endif
-  set scrollbind
-  vsplit
-endfunction "}}}
-function! SetTimeStamp() "{{{
-  if line('$') > 10
-    1,10s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
-  else
-    %s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
-  endif
-endfunction "}}}
-function! SetFontSize(action) "{{{
-  if a:action == 's' " fullscreen show
-    let w:my_fontsize = 18
-    if g:my_os == 'Windows'
-      simalt ~x
-      sleep
-    endif
-  elseif a:action == '+'
-    let w:my_fontsize += 1
-  elseif a:action == '-'
-    let w:my_fontsize -= 1
-  else
-    let w:my_fontsize = g:my_deffontsize
-  endif
-  if g:my_os == 'Windows'
-    let fontstr = 'Courier_New:h' . w:my_fontsize
-    exec 'set gfn=' . fontstr
-  endif
-endfunction "}}}
-" }}}
+set laststatus=2
+set lazyredraw
+set list
+set listchars=tab:\|\ ,trail:-,nbsp:_
+set scrolloff=5
+set foldcolumn=2
 
-" General {{{
-set nocompatible
-map Q :q<CR>
-filetype plugin indent on
-syntax on
-if has('mouse') && &term != 'linux'
-  set mouse=a
-endif
-cd $HOME
-set autochdir
-" }}}
+" File
+set noswapfile
+set nobackup
+set nowritebackup
+"set autoread
+set autowrite
 
-" Language & Encoding {{{
-if g:my_os == 'Windows'
-  language C
-else
-  language en_US.UTF-8
-endif
+" Encoding & multi-byte support
 set encoding=utf-8
 if &term == 'win32' || &term == 'linux'
   set termencoding=cp936
@@ -110,69 +106,41 @@ set ambiwidth=double
 set formatoptions+=mM
 " }}}
 
-" Basic Editing {{{
-set history=100
-set backspace=indent,eol,start
-set whichwrap+=<,>,[,]
-set magic
-set incsearch
-set hlsearch
-set ignorecase
-set virtualedit=block
-set showcmd
-set showmatch
-set wildmenu
-" }}}
-
-" Layout & Formatting {{{
-set nowrap
-set textwidth=0
-set autoindent
-set smartindent
-set shiftround
-set shiftwidth=4
-set tabstop=4
-set expandtab
-set smarttab
-" }}}
-
-" Display {{{
-set shortmess=atI
-set number
-if &diff == 0
-  set statusline=%f\ %m%r[%{strftime('%Y%m%d',getftime(expand('%')))}]\|%-.50{getcwd()}%=%{GetFileEditSetting()}\ %-21(%11(%l/%L%),%-3v\ %P%)
-else
-  set statusline=%f\ %m%r[%{strftime('%Y%m%d',getftime(expand('%')))}]%{GetFileSetting()}
-endif
-set laststatus=2
-set lazyredraw
-set list
-set listchars=tab:\|\ ,trail:-,nbsp:_
-set scrolloff=5
-set foldcolumn=2
-" }}}
-
-" File {{{
-set noswapfile
-set nobackup
-set nowritebackup
-"set autoread
-set autowrite
-" }}}
-
 " GUI {{{
 if has('gui_running')
   colorscheme desert
-  set guioptions=cg
-  nmap <silent> <F1> :if &go =~# 'm' <Bar> set go-=m <Bar> else <Bar> set go+=m <Bar> endif<CR>
+  set guioptions=ceg
+  nmap <silent> <F5> :if &go =~# 'm' <Bar> set go-=m <Bar> else <Bar> set go+=m <Bar> endif<CR>
+  nmap <silent> <F6> :if &go =~# 'l' <Bar> set go-=l <Bar> else <Bar> set go+=l <Bar> endif<CR>
+  nmap <silent> <F7> :if &go =~# 'b' <Bar> set go-=b <Bar> else <Bar> set go+=b <Bar> endif<CR>
+  nmap <silent> <F8> :if &go =~# 'r' <Bar> set go-=r <Bar> else <Bar> set go+=r <Bar> endif<CR>
   source $VIMRUNTIME\delmenu.vim
   source $VIMRUNTIME\menu.vim
   set lines=40 columns=120
-  call SetFontSize('0')
   nmap <C-Up> :call SetFontSize('+')<CR>
   nmap <C-Down> :call SetFontSize('-')<CR>
   nmap <C-k0> :call SetFontSize('0')<CR>
   nmap <C-kPlus> :call SetFontSize('s')<CR>
+  function! SetFontSize(action) "{{{
+    if a:action == 's' " fullscreen show
+      let w:my_fontsize = 18
+      if g:my_os == 'Windows'
+        simalt ~x
+        sleep
+      endif
+    elseif a:action == '+'
+      let w:my_fontsize += 1
+    elseif a:action == '-'
+      let w:my_fontsize -= 1
+    else
+      let w:my_fontsize = 10
+    endif
+    if g:my_os == 'Windows'
+      let fontstr = 'Courier_New:h' . w:my_fontsize
+      exec 'set gfn=' . fontstr
+    endif
+  endfunction "}}}
+  call SetFontSize('0')
 elseif &term == 'xterm'
   set t_Co=256
   if filereadable(g:my_vimfiles . '/colors/desert256.vim')
@@ -192,8 +160,12 @@ if g:my_os == 'Windows'
   exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
   noremap <C-Q> <C-V>
   " }}}
+  " Use <C-S> {{{
+  nmap <C-S> :update<CR>
+  imap <C-S> <C-O>:update<CR>
+  "}}}
   behave mswin
-  " Solution for diff {{{
+  " Diff solution {{{
   set diffexpr=MyDiff()
   function! MyDiff()
     let opt = '-a --binary '
@@ -224,33 +196,41 @@ endif
 
 " Key-mappings {{{
 nmap <ESC><ESC> :noh<CR>
-nmap <C-S> :update<CR>
-imap <C-S> <C-O>:update<CR>
-nmap <C-Tab> :bn<CR>
-nmap <C-S-Tab> :bN<CR>
-" <C-Tab><C-S-Tab> cannot be used in Putty, so also map <F2><F3>
+nmap <C-Tab> gt
+nmap <C-S-Tab> gT
+nmap <F1> :e $VIMRC<CR>
+nmap <C-F1> :so $VIMRC<CR>
 nmap <F2> :bp<CR>
 nmap <F3> :bn<CR>
 nmap <F4> :ls<CR>
-nmap <F5> :e $VIMRC<CR>
-nmap <F7> :Calendar<CR>
-nmap <F8> :NERDTreeToggle<CR>
 nmap <F9> :setl filetype=sql<CR>
-nmap <F10> :setl filetype=confluencewiki<CR>
-nmap <F11> :setl filetype=html<CR>
+nmap <F10> :setl filetype=dosbatch<CR>
+nmap <F11> :setl filetype=xml<CR>
 nmap <F12> :setl wrap!<CR>
 nmap <Leader>ar :set autoread!<CR>
-nmap <Leader>bt :call BeginTranslate()<CR>
 nmap <Leader>et :setl et!<CR>
 nmap <Leader>li :setl list!<CR>
 nmap <Leader>sp :setl spell!<CR>
+nmap <Leader>cr :setl cuc! cul!<CR>
 nmap <Leader>tw :let &tw = (&tw > 0 ? 0 : 78)<CR>
 nmap <Leader>xxd :call XxdToggle()<CR>
+function! XxdToggle() "{{{
+  let mod = &mod
+  if getline(1) =~ "^0000000:"
+    exe '%!xxd -r'
+    set ft=
+    doautocmd filetypedetect BufReadPost
+  else
+    exe '%!xxd'
+    set ft=xxd
+  endif
+  let &mod = mod
+endfunction "}}}
 nmap <Leader>tt :%s/\%u3000/ /ge <Bar> %s/\s\+$//e <Bar> g/^$/d<CR>
 nmap <Leader>ac :%s/^.\+$/\0,/e<CR>
 nmap <Leader>qc :%s/^.\+$/'\0',/e<CR>
-nmap <Leader>eg :setl fenc=cp936<CR>
 nmap <Leader>eu :setl fenc=utf-8<CR>
+nmap <Leader>eg :setl fenc=cp936<CR>
 nmap <Leader>el :setl fenc=latin1<CR>
 nmap <Leader>bm :setl bomb!<CR>
 nmap <Leader>fd :setl ff=dos<CR>
@@ -261,6 +241,7 @@ vmap <silent> // y/<C-R>=escape(@",'\\/.*^$~[]')<CR><CR>
 " Commands {{{
 command! -nargs=? FT setl ft=<args>
 command! -nargs=1 TS setl ts=<args> sw=<args>
+command! -nargs=1 TSI setl ts=<args> sw=<args> fdm=indent
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 command! -range=% Count <line1>,<line2>sort | <line1>,<line2>s#\(^.\+$\)\(\n^\1$\)*#\=submatch(1)."\t".((len(submatch(0))+1)/(len(submatch(1))+1))#
 " }}}
@@ -281,23 +262,19 @@ au FileType html,xhtml,javascript setl noet nosi
 au BufWritePre,FileWritePre *.sql,*.cmd,*.tab if &bomb == 0 | setl fenc=cp936 ff=dos | endif
 " timestamp
 au BufWritePre,FileWritePre *vimrc,*.vim,*.ahk call SetTimeStamp()
-" }}}
-
-" Plugins {{{
-" TOhtml
-let g:html_ignore_folding = 1
-let g:html_use_css = 1
-let g:use_xhtml = 1
-" snipMate
-let g:snips_author = 'Feil <feilniu AT gmail DOT com>'
-" syntax sqlserver
-let g:sql_type_default = 'sqlserver'
+function! SetTimeStamp() "{{{
+  if line('$') > 10
+    1,10s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
+  else
+    %s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
+  endif
+endfunction "}}}
 " }}}
 
 " Compatibility {{{
 if v:version >= 703
   set cryptmethod=blowfish
-  nmap <silent> <Leader>rn :if &rnu == 0 <Bar> setl rnu <Bar> else <Bar> setl nu <Bar> endif<CR>
+  nmap <silent> <Leader>rn :setl rnu!<CR>
 endif
 " }}}
 

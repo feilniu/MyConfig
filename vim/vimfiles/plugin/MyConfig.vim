@@ -1,7 +1,18 @@
 " File: MyConfig.vim
 " Description: My Config
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2014-07-29 23:07:50
+" Last Change: 2014-08-16 01:06:28
+
+" My plugins {{{
+" TOhtml
+let g:html_ignore_folding = 1
+let g:html_use_css = 1
+let g:use_xhtml = 1
+" snipMate
+let g:snips_author = 'Feil <feilniu AT gmail DOT com>'
+" syntax sqlserver
+let g:sql_type_default = 'sqlserver'
+" }}}
 
 " My Commands {{{
 command! Etxt :e $VIM/vimfiles/syntax/txt.vim
