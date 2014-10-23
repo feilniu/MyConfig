@@ -1,6 +1,6 @@
 " Description: MY vimrc for Linux/Windows, GUI/Console
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2014-10-19 21:24:40
+" Last Change: 2014-10-23 22:15:17
 
 " Global variables {{{
 if has('win32')
@@ -257,7 +257,7 @@ au BufNewFile,BufRead *.cmd,*.sh,*.vim setl et ts=2 sw=2
 au BufNewFile,BufRead *.dtsConfig,*.rdl setl et ts=2 sw=2
 au BufNewFile,BufRead *.xml,*web.config setl noet
 au FileType vim,python,perl,sh,cs setl noic
-au FileType sql setl noet nosi
+au FileType sql setl noet nosi ar
 au FileType html,xhtml,javascript setl noet nosi
 au BufWritePre,FileWritePre *.sql,*.cmd,*.tab if &bomb == 0 | setl fenc=cp936 ff=dos | endif
 " timestamp

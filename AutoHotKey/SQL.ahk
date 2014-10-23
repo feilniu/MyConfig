@@ -1,5 +1,5 @@
 ; SQL auto-input
-; Last Change: 2012-10-16 09:45:34
+; Last Change: 2014-10-21 22:35:40
 
 :?:;s::SELECT
 :?:;tp::TOP(10)
@@ -50,6 +50,8 @@ return
 :?:;upd::UPDATE
 :?:;del::DELETE
 :?:;delf::DELETE FROM
+:?:;mg::MERGE
+:?:;us::USING
 
 :?:;ci::CREATE INDEX
 :?:;cui::CREATE UNIQUE INDEX
