@@ -1,6 +1,6 @@
 " Description: MY vimrc for Linux/Windows, GUI/Console
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2014-10-19 21:24:40
+" Last Change: 2015-01-15 22:30:35
 
 " Global variables {{{
 if has('win32')
@@ -17,11 +17,11 @@ endif
 let $VIMRC = g:my_vimrc
 let $VIMFILES = g:my_vimfiles
 let $TEMPLATE = g:my_template
-" }}}
+"}}}
 
 " General settings {{{
 set nocompatible
-map Q :q<CR>
+map Q :qa<CR>
 filetype plugin indent on
 syntax on
 if has('mouse')
@@ -39,7 +39,6 @@ endif
 set history=100
 set backspace=indent,eol,start
 set whichwrap+=<,>,[,]
-set magic
 set incsearch
 set hlsearch
 set ignorecase
@@ -104,7 +103,7 @@ endif
 set fileencodings=ucs-bom,utf-8,chinese,latin1
 set ambiwidth=double
 set formatoptions+=mM
-" }}}
+"}}}
 
 " GUI {{{
 if has('gui_running')
@@ -147,7 +146,7 @@ elseif &term == 'xterm'
     colorscheme desert256
   endif
 endif
-" }}}
+"}}}
 
 " Windows {{{
 if g:my_os == 'Windows'
@@ -159,7 +158,7 @@ if g:my_os == 'Windows'
   exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
   exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
   noremap <C-Q> <C-V>
-  " }}}
+  "}}}
   " Use <C-S> {{{
   nmap <C-S> :update<CR>
   imap <C-S> <C-O>:update<CR>
@@ -190,12 +189,19 @@ if g:my_os == 'Windows'
     endif
     silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
   endfunction
-  " }}}
+  "}}}
+  if &diff
+    au GUIEnter * simalt ~x
+  endif
 endif
-" }}}
+"}}}
 
 " Key-mappings {{{
 nmap <ESC><ESC> :noh<CR>
+nmap <A-Up> [c
+nmap <A-Down> ]c
+nmap <A-Left> zH
+nmap <A-Right> zL
 nmap <C-Tab> gt
 nmap <C-S-Tab> gT
 nmap <F1> :e $VIMRC<CR>
@@ -236,7 +242,7 @@ nmap <Leader>bm :setl bomb!<CR>
 nmap <Leader>fd :setl ff=dos<CR>
 nmap <Leader>fu :setl ff=unix<CR>
 vmap <silent> // y/<C-R>=escape(@",'\\/.*^$~[]')<CR><CR>
-" }}}
+"}}}
 
 " Commands {{{
 command! -nargs=? FT setl ft=<args>
@@ -244,7 +250,7 @@ command! -nargs=1 TS setl ts=<args> sw=<args>
 command! -nargs=1 TSI setl ts=<args> sw=<args> fdm=indent
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 command! -range=% Count <line1>,<line2>sort | <line1>,<line2>s#\(^.\+$\)\(\n^\1$\)*#\=submatch(1)."\t".((len(submatch(0))+1)/(len(submatch(1))+1))#
-" }}}
+"}}}
 
 " Autocmds {{{
 " last-position-jump
@@ -257,7 +263,7 @@ au BufNewFile,BufRead *.cmd,*.sh,*.vim setl et ts=2 sw=2
 au BufNewFile,BufRead *.dtsConfig,*.rdl setl et ts=2 sw=2
 au BufNewFile,BufRead *.xml,*web.config setl noet
 au FileType vim,python,perl,sh,cs setl noic
-au FileType sql setl noet nosi
+au FileType sql setl noet nosi ar
 au FileType html,xhtml,javascript setl noet nosi
 au BufWritePre,FileWritePre *.sql,*.cmd,*.tab if &bomb == 0 | setl fenc=cp936 ff=dos | endif
 " timestamp
@@ -269,13 +275,13 @@ function! SetTimeStamp() "{{{
     %s/Last Change:\s.*$/\=strftime("Last Change: %Y-%m-%d %H:%M:%S")/ge
   endif
 endfunction "}}}
-" }}}
+"}}}
 
 " Compatibility {{{
 if v:version >= 703
   set cryptmethod=blowfish
   nmap <silent> <Leader>rn :setl rnu!<CR>
 endif
-" }}}
+"}}}
 
 " vim:et:ts=2:sw=2:fdm=marker:

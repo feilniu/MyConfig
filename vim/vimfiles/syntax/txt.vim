@@ -2,7 +2,7 @@
 " Description: plain text syntax file
 " Language: text/plain :)
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2014-08-21 23:02:02
+" Last Change: 2014-11-23 18:28:45
 
 scriptencoding utf-8
 
@@ -39,7 +39,7 @@ syn region txtComment start='\/\*' end='\*\/' contains=@txtCommentContains
 syn match txtTitle '^\(\d\+\.\)*\d\+ \+.\+$'
 syn match txtTitle '^[一二三四五六七八九十]\+[、. ] *.\+$'
 syn match txtTitle '^[=■◆▲●★□◇△○☆] \+.\+$'
-syn match txtSubTitle '^\d\+\. .\+$'
+" syn match txtSubTitle '^\d\+\. .\+$'
 
 syn match txtList '^\s*\zs[-+*]\ze [^ ]'
 syn match txtList '^\s*\zs[A-Za-z]\+\.\ze [^ ]'
