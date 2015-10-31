@@ -1,6 +1,6 @@
 " Description: MY vimrc for Linux/Windows, GUI/Console
 " Author: Feil <feilniu AT gmail DOT com>
-" Last Change: 2015-01-15 22:30:35
+" Last Change: 2015-10-31 10:44:28
 
 " Global variables {{{
 if has('win32')
@@ -97,9 +97,6 @@ set autowrite
 
 " Encoding & multi-byte support
 set encoding=utf-8
-if &term == 'win32' || &term == 'linux'
-  set termencoding=cp936
-endif
 set fileencodings=ucs-bom,utf-8,chinese,latin1
 set ambiwidth=double
 set formatoptions+=mM
@@ -116,6 +113,22 @@ if has('gui_running')
   source $VIMRUNTIME\delmenu.vim
   source $VIMRUNTIME\menu.vim
   set lines=40 columns=120
+  nmap <C-\> :call ToggleFullScreen()<CR>
+  function! ToggleFullScreen() "{{{
+    if &lines == 40 && &columns == 120
+      simalt ~x
+    else
+      set lines=40 columns=120
+    endif
+  endfunction "}}}
+  nmap <A-\> :call ToggleWindowSize()<CR>
+  function! ToggleWindowSize() "{{{
+    if &lines == 40 && &columns == 120
+      set lines=50 columns=100
+    else
+      set lines=40 columns=120
+    endif
+  endfunction "}}}
   nmap <C-Up> :call SetFontSize('+')<CR>
   nmap <C-Down> :call SetFontSize('-')<CR>
   nmap <C-k0> :call SetFontSize('0')<CR>
@@ -132,7 +145,7 @@ if has('gui_running')
     elseif a:action == '-'
       let w:my_fontsize -= 1
     else
-      let w:my_fontsize = 10
+      let w:my_fontsize = 10 " default font size
     endif
     if g:my_os == 'Windows'
       let fontstr = 'Courier_New:h' . w:my_fontsize
@@ -142,15 +155,12 @@ if has('gui_running')
   call SetFontSize('0')
 elseif &term == 'xterm'
   set t_Co=256
-  if filereadable(g:my_vimfiles . '/colors/desert256.vim')
-    colorscheme desert256
-  endif
 endif
 "}}}
 
 " Windows {{{
 if g:my_os == 'Windows'
-  " Use <C-X><C-C><C-V> {{{
+  " Use <C-X><C-C><C-V> to cut/copy/paste {{{
   vnoremap <C-X> "+x
   vnoremap <C-C> "+y
   map <C-V> "+gP
@@ -159,7 +169,7 @@ if g:my_os == 'Windows'
   exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
   noremap <C-Q> <C-V>
   "}}}
-  " Use <C-S> {{{
+  " Use <C-S> to save {{{
   nmap <C-S> :update<CR>
   imap <C-S> <C-O>:update<CR>
   "}}}
@@ -213,6 +223,9 @@ nmap <F9> :setl filetype=sql<CR>
 nmap <F10> :setl filetype=dosbatch<CR>
 nmap <F11> :setl filetype=xml<CR>
 nmap <F12> :setl wrap!<CR>
+nmap <Leader>dt :diffthis<CR>
+nmap <Leader>du :diffupdate<CR>
+nmap <Leader>tn :tabnew<CR>
 nmap <Leader>ar :set autoread!<CR>
 nmap <Leader>et :setl et!<CR>
 nmap <Leader>li :setl list!<CR>
@@ -241,6 +254,7 @@ nmap <Leader>el :setl fenc=latin1<CR>
 nmap <Leader>bm :setl bomb!<CR>
 nmap <Leader>fd :setl ff=dos<CR>
 nmap <Leader>fu :setl ff=unix<CR>
+nmap <Leader>mp /1[34578]\d\{9}<CR>
 vmap <silent> // y/<C-R>=escape(@",'\\/.*^$~[]')<CR><CR>
 "}}}
 
@@ -250,6 +264,14 @@ command! -nargs=1 TS setl ts=<args> sw=<args>
 command! -nargs=1 TSI setl ts=<args> sw=<args> fdm=indent
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 command! -range=% Count <line1>,<line2>sort | <line1>,<line2>s#\(^.\+$\)\(\n^\1$\)*#\=submatch(1)."\t".((len(submatch(0))+1)/(len(submatch(1))+1))#
+command! -nargs=? WT call WriteTempFile(<f-args>)
+function! WriteTempFile(...) "{{{
+  if expand('%') == ''
+    let filename = strftime("%Y%m%d%H%M%S") . '.' . (a:0 >= 1 ? a:1 : 'tmp')
+    exe 'write $TMP/' . filename
+  endif
+endfunction "}}}
+command! -range=% FormatJSON <line1>,<line2>!python -m json.tool
 "}}}
 
 " Autocmds {{{
