@@ -1,10 +1,11 @@
 ; SQL auto-input
-; Last Change: 2014-10-21 22:35:40
+; Last Change: 2015-07-22 16:51:24
 
 :?:;s::SELECT
 :?:;tp::TOP(10)
 :?:;d::DISTINCT
 :?:;f::FROM
+:?:;lmt::LIMIT
 :?:;ij::INNER JOIN
 :?:;lj::LEFT JOIN
 :?:;rj::RIGHT JOIN
@@ -153,5 +154,5 @@ return
 :?:;src::SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 :?:;srr::SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
 :?:;ssl::SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-:?*:;mp::'1[3458]'{+}REPLICATE('[0-9]',9)
+:?*:;mp::'1[34578]'{+}REPLICATE('[0-9]',9)
 :?*:;23::23:59:59
