@@ -1,5 +1,5 @@
 ; SQL auto-input
-; Last Change: 2015-07-22 16:51:24
+; Last Change: 2016-02-18 12:52:27
 
 :?:;s::SELECT
 :?:;tp::TOP(10)
@@ -65,10 +65,12 @@ return
 :?:;at::ALTER TABLE
 :?:;dt::DROP TABLE
 :?:;tt::TRUNCATE TABLE
+:?:;ai::AUTO_INCREMENT
 :?:;id::IDENTITY(1,1)
 :?:;uqid::uniqueidentifier
 :?:;cstr::CONSTRAINT
-:?:;pk::PRIMARY KEY CLUSTERED
+:?:;pk::PRIMARY KEY
+:?:;pkc::PRIMARY KEY CLUSTERED
 :?:;uq::UNIQUE
 :?:;fk::FOREIGN KEY
 :?:;ref::REFERENCES
@@ -143,9 +145,6 @@ return
 :?*:;idk::WITH (IGNORE_DUP_KEY = ON)
 :?*:;fxp::FOR XML PATH('')
 :?*:;rserr::RAISERROR('',16,1){left 7}
-
-:?:;exas::EXECUTE AS
-:?:;rvt::REVERT
 
 :?:;snc::SET NOCOUNT ON
 :?:;sii::SET IDENTITY_INSERT
