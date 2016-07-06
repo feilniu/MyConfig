@@ -1,14 +1,14 @@
 /****************************************************************************
-*              Confluence Wiki SQLä»£ç†ä½œä¸šæ–‡æ¡£ç”Ÿæˆå·¥å…· V1.0                 *
+*              Confluence Wiki SQL´úÀí×÷ÒµÎÄµµÉú³É¹¤¾ß V1.1                 *
 ****************************************************************************/
 SET NOCOUNT ON
 GO
 DECLARE @wikixml xml, @wiki nvarchar(max);
 DECLARE @JobName nvarchar(200), @Server nvarchar(100);
 /****************************************************************************
-ç”Ÿæˆæ‰€æœ‰ä½œä¸šçš„åˆ—è¡¨ï¼š
+Éú³ÉËùÓĞ×÷ÒµµÄÁĞ±í£º
 	SET @JobName = ''
-ç”Ÿæˆä½œä¸šåä¸ºâ€œXYZâ€çš„é¡µé¢ï¼š
+Éú³É×÷ÒµÃûÎª¡°XYZ¡±µÄÒ³Ãæ£º
 	SET @JobName = 'XYZ'
 ****************************************************************************/
 
@@ -20,25 +20,25 @@ SET @Server = '192.168.'
 
 
 /****************************************************************************
-ä»¥ä¸‹ä»£ç ä¸è¦æ›´æ”¹
+ÒÔÏÂ´úÂë²»Òª¸ü¸Ä
 ****************************************************************************/
 IF @JobName = ''
 BEGIN
-PRINT 'h1. è¯´æ˜
+PRINT 'h1. ËµÃ÷
 ----
-'+REPLACE(@Server,'_','\_')+' çš„SQLä»£ç†ä½œä¸š
-æŒ‰æ—¶é—´é¡ºåºåˆ—å‡º
+'+REPLACE(@Server,'_','\_')+' µÄSQL´úÀí×÷Òµ
+°´Ê±¼äË³ĞòÁĞ³ö
 
-h1. SQLä»£ç†ä½œä¸šåˆ—è¡¨
+h1. SQL´úÀí×÷ÒµÁĞ±í
 ----
-|| æ—¥æœŸ || æ—¶é—´ || ä½œä¸šå ||'
+|| ÈÕÆÚ || Ê±¼ä || ×÷ÒµÃû ||'
 SET @wikixml = '<s>'+
 STUFF((
 SELECT
 	CHAR(10)+'| '+
 	CASE
-		WHEN s.freq_type = 4 THEN 'æ¯'+ISNULL(CAST(NULLIF(s.freq_interval,1) AS nvarchar(10)),'')+'å¤©'
-		WHEN s.freq_type = 8 THEN 'æ¯å‘¨'+
+		WHEN s.freq_type = 4 THEN 'Ã¿'+ISNULL(CAST(NULLIF(s.freq_interval,1) AS nvarchar(10)),'')+'Ìì'
+		WHEN s.freq_type = 8 THEN 'Ã¿ÖÜ'+
 			CASE WHEN s.freq_interval & 1 > 0 THEN '0' ELSE '' END+
 			CASE WHEN s.freq_interval & 2 > 0 THEN '1' ELSE '' END+
 			CASE WHEN s.freq_interval & 4 > 0 THEN '2' ELSE '' END+
@@ -50,14 +50,14 @@ SELECT
 	CASE
 		WHEN s.freq_subday_type = 1 THEN STUFF(LEFT(RIGHT('00000'+CAST(s.active_start_time AS nvarchar(10)),6),4),3,0,':')
 		ELSE CASE WHEN s.active_start_time = 0 AND s.active_end_time = 235959 THEN ''
-			ELSE STUFF(LEFT(RIGHT('00000'+CAST(s.active_start_time AS nvarchar(10)),6),4),3,0,':')+'åˆ°'+STUFF(LEFT(RIGHT('00000'+CAST(s.active_end_time AS nvarchar(10)),6),4),3,0,':')+'æœŸé—´'
+			ELSE STUFF(LEFT(RIGHT('00000'+CAST(s.active_start_time AS nvarchar(10)),6),4),3,0,':')+'µ½'+STUFF(LEFT(RIGHT('00000'+CAST(s.active_end_time AS nvarchar(10)),6),4),3,0,':')+'ÆÚ¼ä'
 			END+
-			'æ¯'+CAST(s.freq_subday_interval AS nvarchar(10))+CASE
-			WHEN s.freq_subday_type = 2 THEN 'ç§’'
-			WHEN s.freq_subday_type = 4 THEN 'åˆ†é’Ÿ'
-			WHEN s.freq_subday_type = 8 THEN 'å°æ—¶' END
+			'Ã¿'+CAST(s.freq_subday_interval AS nvarchar(10))+CASE
+			WHEN s.freq_subday_type = 2 THEN 'Ãë'
+			WHEN s.freq_subday_type = 4 THEN '·ÖÖÓ'
+			WHEN s.freq_subday_type = 8 THEN 'Ğ¡Ê±' END
 		END+' | ['+
-	REPLACE(REPLACE(REPLACE(j.name,':','ï¼š'),'@','ï¼ '),'|','ï½œ')+'] |'
+	REPLACE(REPLACE(REPLACE(j.name,':','£º'),'@','£À'),'|','£ü')+'] |'
 FROM msdb.dbo.sysjobschedules js
 INNER JOIN msdb.dbo.sysschedules s
 ON js.schedule_id = s.schedule_id
@@ -113,14 +113,14 @@ BEGIN
 DECLARE @JobDesc nvarchar(512)
 SET @JobDesc = (SELECT j.description FROM msdb.dbo.sysjobs j WHERE j.name = @JobName)
  
-PRINT 'h1. è¯´æ˜
+PRINT 'h1. ËµÃ÷
 ----
 '+REPLACE(@JobDesc,'_','\_')+'
-è´Ÿè´£äººï¼š
+¸ºÔğÈË£º
 
-h1. ä½œä¸šæ­¥éª¤
+h1. ×÷Òµ²½Öè
 ----
-|| æ­¥éª¤ || æ­¥éª¤å || ç±»åˆ« || æˆåŠŸæ—¶ || å¤±è´¥æ—¶ || é‡è¯•è®¾å®š || æ“ä½œ ||'
+|| ²½Öè || ²½ÖèÃû || Àà±ğ || ³É¹¦Ê± || Ê§°ÜÊ± || ÖØÊÔÉè¶¨ || ²Ù×÷ ||'
 SET @wikixml = '<s>'+
 STUFF((
 SELECT
@@ -129,23 +129,23 @@ SELECT
 	REPLACE(REPLACE(REPLACE(step_name,'_','\_'),'[','\['),']','\]')+' | '+
 	subsystem+' | '+
 	CASE on_success_action
-		WHEN 1 THEN 'æˆåŠŸåé€€å‡º'
-		WHEN 3 THEN 'è½¬åˆ°ä¸‹ä¸€æ­¥'
-		WHEN 4 THEN 'è½¬åˆ°æ­¥éª¤'+CAST(on_success_step_id AS nvarchar(10))
+		WHEN 1 THEN '³É¹¦ºóÍË³ö'
+		WHEN 3 THEN '×ªµ½ÏÂÒ»²½'
+		WHEN 4 THEN '×ªµ½²½Öè'+CAST(on_success_step_id AS nvarchar(10))
 		ELSE '' END+' | '+
 	CASE on_fail_action
-		WHEN 2 THEN 'å¤±è´¥åé€€å‡º'
-		WHEN 3 THEN 'è½¬åˆ°ä¸‹ä¸€æ­¥'
-		WHEN 4 THEN 'è½¬åˆ°æ­¥éª¤'+CAST(on_fail_step_id AS nvarchar(10))
+		WHEN 2 THEN 'Ê§°ÜºóÍË³ö'
+		WHEN 3 THEN '×ªµ½ÏÂÒ»²½'
+		WHEN 4 THEN '×ªµ½²½Öè'+CAST(on_fail_step_id AS nvarchar(10))
 		ELSE '' END+' | '+
-	CASE WHEN retry_attempts > 0 THEN 'é‡è¯•'+CAST(retry_attempts AS nvarchar(10))+'æ¬¡ï¼Œé—´éš”'+CAST(retry_interval AS nvarchar(10))+'åˆ†é’Ÿ'
-		ELSE 'ä¸é‡è¯•' END+' | '+
+	CASE WHEN retry_attempts > 0 THEN 'ÖØÊÔ'+CAST(retry_attempts AS nvarchar(10))+'´Î£¬¼ä¸ô'+CAST(retry_interval AS nvarchar(10))+'·ÖÖÓ'
+		ELSE '²»ÖØÊÔ' END+' | '+
 	CASE subsystem
 		WHEN 'SSIS' THEN
 			CASE WHEN command LIKE '/SQL "\etl_framework_v2_5_main_template" % /CONFIGFILE "%" /MAXCONCURRENT %'
 				THEN REPLACE(REPLACE(REPLACE(STUFF(LEFT(command,CHARINDEX('/MAXCONCURRENT',command)-2),1,CHARINDEX('/CONFIGFILE',command)+12,''),'_','\_'),'[','\['),']','\]')
 				ELSE '' END
-			WHEN 'TSQL' THEN 'åœ¨æ•°æ®åº“ '+database_name+' ä¸Šæ‰§è¡Œï¼š'+REPLACE(REPLACE(REPLACE(REPLACE(LEFT(command,100),NCHAR(13)+NCHAR(10),'  '),'_','\_'),'[','\['),']','\]')+CASE WHEN LEN(command)>100 THEN ' ...' ELSE '' END
+			WHEN 'TSQL' THEN 'ÔÚÊı¾İ¿â '+database_name+' ÉÏÖ´ĞĞ£º'+REPLACE(REPLACE(REPLACE(REPLACE(LEFT(command,100),NCHAR(13)+NCHAR(10),'  '),'_','\_'),'[','\['),']','\]')+CASE WHEN LEN(command)>100 THEN ' ...' ELSE '' END
 		ELSE '' END+' |'
 FROM msdb.dbo.sysjobsteps jst
 WHERE jst.job_id = @JobID
@@ -155,16 +155,16 @@ SET @wiki = @wikixml.value('/s[1]','nvarchar(max)')
 PRINT @wiki
 
 PRINT '
-h1. æ‰§è¡Œè®¡åˆ’
+h1. Ö´ĞĞ¼Æ»®
 ----
-|| æ—¥æœŸ || æ—¶é—´ ||'
+|| ÈÕÆÚ || Ê±¼ä ||'
 SET @wikixml = '<s>'+
 STUFF((
 SELECT
 	CHAR(10)+'| '+
 	CASE
-		WHEN s.freq_type = 4 THEN 'æ¯'+ISNULL(CAST(NULLIF(s.freq_interval,1) AS nvarchar(10)),'')+'å¤©'
-		WHEN s.freq_type = 8 THEN 'æ¯å‘¨'+
+		WHEN s.freq_type = 4 THEN 'Ã¿'+ISNULL(CAST(NULLIF(s.freq_interval,1) AS nvarchar(10)),'')+'Ìì'
+		WHEN s.freq_type = 8 THEN 'Ã¿ÖÜ'+
 			CASE WHEN s.freq_interval & 1 > 0 THEN '0' ELSE '' END+
 			CASE WHEN s.freq_interval & 2 > 0 THEN '1' ELSE '' END+
 			CASE WHEN s.freq_interval & 4 > 0 THEN '2' ELSE '' END+
@@ -176,12 +176,12 @@ SELECT
 	CASE
 		WHEN s.freq_subday_type = 1 THEN STUFF(LEFT(RIGHT('00000'+CAST(s.active_start_time AS nvarchar(10)),6),4),3,0,':')
 		ELSE CASE WHEN s.active_start_time = 0 AND s.active_end_time = 235959 THEN ''
-			ELSE STUFF(LEFT(RIGHT('00000'+CAST(s.active_start_time AS nvarchar(10)),6),4),3,0,':')+'åˆ°'+STUFF(LEFT(RIGHT('00000'+CAST(s.active_end_time AS nvarchar(10)),6),4),3,0,':')+'æœŸé—´'
+			ELSE STUFF(LEFT(RIGHT('00000'+CAST(s.active_start_time AS nvarchar(10)),6),4),3,0,':')+'µ½'+STUFF(LEFT(RIGHT('00000'+CAST(s.active_end_time AS nvarchar(10)),6),4),3,0,':')+'ÆÚ¼ä'
 			END+
-			'æ¯'+CAST(s.freq_subday_interval AS nvarchar(10))+CASE
-			WHEN s.freq_subday_type = 2 THEN 'ç§’'
-			WHEN s.freq_subday_type = 4 THEN 'åˆ†é’Ÿ'
-			WHEN s.freq_subday_type = 8 THEN 'å°æ—¶' END
+			'Ã¿'+CAST(s.freq_subday_interval AS nvarchar(10))+CASE
+			WHEN s.freq_subday_type = 2 THEN 'Ãë'
+			WHEN s.freq_subday_type = 4 THEN '·ÖÖÓ'
+			WHEN s.freq_subday_type = 8 THEN 'Ğ¡Ê±' END
 		END+' |'
 FROM msdb.dbo.sysjobschedules js
 INNER JOIN msdb.dbo.sysschedules s
@@ -197,7 +197,7 @@ SET @wiki = @wikixml.value('/s[1]','nvarchar(max)')
 PRINT @wiki
 
 PRINT '
-h1. éƒ¨ç½²æœåŠ¡å™¨
+h1. ²¿Êğ·şÎñÆ÷
 ----
 '+REPLACE(@Server,'_','\_')
 
@@ -205,7 +205,7 @@ END
 
 ELSE
 BEGIN
-	PRINT 'æ‰¾ä¸åˆ°ä½œä¸šï¼š'+@JobName
+	PRINT 'ÕÒ²»µ½×÷Òµ£º'+@JobName
 END
 
 END

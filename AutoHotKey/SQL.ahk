@@ -1,5 +1,5 @@
 ; SQL auto-input
-; Last Change: 2016-02-18 12:52:27
+; Last Change: 2016-03-08 14:59:00
 
 :?:;s::SELECT
 :?:;tp::TOP(10)
@@ -66,6 +66,7 @@ return
 :?:;dt::DROP TABLE
 :?:;tt::TRUNCATE TABLE
 :?:;ai::AUTO_INCREMENT
+:?:;crt::CURRENT_TIMESTAMP
 :?:;id::IDENTITY(1,1)
 :?:;uqid::uniqueidentifier
 :?:;cstr::CONSTRAINT
@@ -79,6 +80,7 @@ return
 :?:;n::NULL
 :?:;nn::NOT NULL
 
+:?:;deli::DELIMITER $$
 :?:;cf::CREATE FUNCTION
 :?:;cp::CREATE PROCEDURE
 :?:;cv::CREATE VIEW
